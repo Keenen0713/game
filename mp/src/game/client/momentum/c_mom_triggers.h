@@ -26,6 +26,8 @@ public:
     void DrawOutlineModel(const Color &outlineColor);
     bool ShouldDraw() OVERRIDE;
     int DrawModel(int flags) OVERRIDE;
+    bool IsTwoPass() override { return true; }
+    bool IsTransparent() override { return true; }
 
     int m_iTrackNumber;
 
