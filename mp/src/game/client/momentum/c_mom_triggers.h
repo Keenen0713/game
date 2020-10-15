@@ -26,6 +26,7 @@ public:
     void DrawOutlineModel(const Color &outlineColor);
     bool ShouldDraw() OVERRIDE;
     int DrawModel(int flags) OVERRIDE;
+    void DrawSideFacesModelAsOverlay(const Color faceColor);
     bool IsTwoPass() override { return true; }
     bool IsTransparent() override { return true; }
 
