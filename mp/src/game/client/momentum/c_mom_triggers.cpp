@@ -45,6 +45,9 @@ static ConVar mom_zone_checkpoint_draw_color("mom_zone_checkpoint_draw_color", "
 static MAKE_CONVAR(mom_zone_draw_overlay_duration, "0.001", FCVAR_CLIENTCMD_CAN_EXECUTE | FCVAR_ARCHIVE, "Changes the duration of the side faces overlays when drawn.\n"
                    "Too low or high of a value can cause stuttering, with higher values lagging the game.", 0.0f, 1.0f);
 
+static MAKE_TOGGLE_CONVAR(mom_zone_draw_alpha_override_toggle, "1", FCVAR_CLIENTCMD_CAN_EXECUTE | FCVAR_ARCHIVE, "Toggles the alpha override for drawing zone faces");
+static MAKE_CONVAR(mom_zone_draw_faces_alpha_override, "160", FCVAR_CLIENTCMD_CAN_EXECUTE | FCVAR_ARCHIVE, "Alpha override for drawing zone faces.", 0, 255);
+
 CTriggerOutlineRenderer::CTriggerOutlineRenderer()
 {
     m_pVertices = nullptr;
@@ -72,10 +75,11 @@ bool CTriggerOutlineRenderer::RenderBrushModelSurface(IClientEntity* pBaseEntity
     pBrushSurface->GetVertexData(m_pVertices);
     CMatRenderContextPtr pRenderContext(materials);
 
+    bool bDrawingFace = m_iRenderMode == MOM_ZONE_DRAW_MODE_FACES_BRUSH || m_iRenderMode == MOM_ZONE_DRAW_MODE_FACES_OVERLAY;
     CMeshBuilder builder;
     builder.Begin(pRenderContext->GetDynamicMesh(true, nullptr, nullptr, 
-        materials->FindMaterial("momentum/zone_outline", TEXTURE_GROUP_OTHER)),
-        m_iRenderMode == MOM_ZONE_DRAW_MODE_FACES_BRUSH || m_iRenderMode == MOM_ZONE_DRAW_MODE_FACES_OVERLAY ? MATERIAL_POLYGON : MATERIAL_LINE_LOOP, vertices);
+                  materials->FindMaterial("momentum/zone_outline", TEXTURE_GROUP_OTHER)),
+                  bDrawingFace ? MATERIAL_POLYGON : MATERIAL_LINE_LOOP, vertices);
 
     for (int i = 0; i < vertices; i++)
     {
@@ -83,7 +87,7 @@ bool CTriggerOutlineRenderer::RenderBrushModelSurface(IClientEntity* pBaseEntity
 
         builder.Position3fv(vertex.m_Pos.Base());
         builder.Normal3fv(vertex.m_Normal.Base());
-        builder.Color4ub(m_Color.r(), m_Color.g(), m_Color.b(), m_Color.a());
+        builder.Color4ub(m_Color.r(), m_Color.g(), m_Color.b(), bDrawingFace && mom_zone_draw_alpha_override_toggle.GetBool() ? mom_zone_draw_faces_alpha_override.GetInt() : m_Color.a());
         builder.AdvanceVertex();
     }
 
@@ -162,6 +166,8 @@ void C_BaseMomZoneTrigger::DrawSideFacesModelAsBrush(const Color faceColor)
     if (iNum <= 2)
         return;
 
+    int faceAlpha = mom_zone_draw_alpha_override_toggle.GetBool() ? mom_zone_draw_faces_alpha_override.GetInt() : faceColor.a();
+
     CMatRenderContextPtr pRenderContext(materials);
     IMesh *pMesh = pRenderContext->GetDynamicMesh(true, nullptr, nullptr, materials->FindMaterial("momentum/zone_outline", TEXTURE_GROUP_OTHER));
     CMeshBuilder builder;
@@ -174,19 +180,19 @@ void C_BaseMomZoneTrigger::DrawSideFacesModelAsBrush(const Color faceColor)
         builder.Begin(pMesh, MATERIAL_QUADS, 4);
 
         builder.Position3fv(vecCurr.Base());
-        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceAlpha);
         builder.AdvanceVertex();
 
         builder.Position3f(vecCurr.x, vecCurr.y, vecCurr.z + m_flZoneHeight);
-        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceAlpha);
         builder.AdvanceVertex();
 
         builder.Position3f(vecNext.x, vecNext.y, vecNext.z + m_flZoneHeight);
-        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceAlpha);
         builder.AdvanceVertex();
 
         builder.Position3fv(vecNext.Base());
-        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceAlpha);
         builder.AdvanceVertex();
         
         builder.End(false, true);
@@ -213,8 +219,8 @@ void C_BaseMomZoneTrigger::DrawSideFacesModelAsOverlay(const Color faceColor)
         // `AddBoxOverlay` always draws outlines based on the color given so `AddBoxOverlay2` is used
         // 0.001 duration used as 0, FLT_EPSILON, 0.01, etc. flickers for some reason
         // too high of duration causes too much to be rendered at once and can crash / lag the game
-        debugoverlay->AddBoxOverlay(vecCurr, min, Vector(iWidth, 0, m_flZoneHeight), angle, faceColor.r(), faceColor.g(),
-                                    faceColor.b(), faceColor.a(), mom_zone_draw_overlay_duration.GetFloat());
+        debugoverlay->AddBoxOverlay(vecCurr, min, Vector(iWidth, 0, m_flZoneHeight), angle, faceColor.r(), faceColor.g(), faceColor.b(),
+            mom_zone_draw_alpha_override_toggle.GetBool() ? mom_zone_draw_faces_alpha_override.GetInt() : faceColor.a(), mom_zone_draw_overlay_duration.GetFloat());
     }
 }
 
