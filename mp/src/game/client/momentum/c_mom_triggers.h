@@ -24,9 +24,12 @@ public:
     virtual bool GetOutlineColor() { return false; }
 
     void DrawOutlineModel(const Color &outlineColor);
-    bool ShouldDraw() OVERRIDE;
     int DrawModel(int flags) OVERRIDE;
+
+    void DrawSideFacesModelAsBrush(const Color faceColor);
     void DrawSideFacesModelAsOverlay(const Color faceColor);
+
+    bool ShouldDraw() override { return true; }
     bool IsTwoPass() override { return true; }
     bool IsTransparent() override { return true; }
 

@@ -134,9 +134,41 @@ void C_BaseMomZoneTrigger::DrawOutlineModel(const Color& outlineColor)
     builder.End(false, true);
 }
 
-bool C_BaseMomZoneTrigger::ShouldDraw()
+void C_BaseMomZoneTrigger::DrawSideFacesModelAsBrush(const Color faceColor)
 {
-    return true;
+    const int iNum = m_vecZonePoints.Count();
+    if (iNum <= 2)
+        return;
+
+    CMatRenderContextPtr pRenderContext(materials);
+    IMesh *pMesh = pRenderContext->GetDynamicMesh(true, nullptr, nullptr, materials->FindMaterial("momentum/zone_outline", TEXTURE_GROUP_OTHER));
+    CMeshBuilder builder;
+
+    for (int i = 0; i < iNum; i++)
+    {
+        const auto vecCurr = m_vecZonePoints[i];
+        const auto vecNext = m_vecZonePoints[(i + 1) % iNum];
+
+        builder.Begin(pMesh, MATERIAL_QUADS, 4);
+
+        builder.Position3fv(vecCurr.Base());
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.AdvanceVertex();
+
+        builder.Position3f(vecCurr.x, vecCurr.y, vecCurr.z + m_flZoneHeight);
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.AdvanceVertex();
+
+        builder.Position3f(vecNext.x, vecNext.y, vecNext.z + m_flZoneHeight);
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.AdvanceVertex();
+
+        builder.Position3fv(vecNext.Base());
+        builder.Color4ub(faceColor.r(), faceColor.g(), faceColor.b(), faceColor.a());
+        builder.AdvanceVertex();
+        
+        builder.End(false, true);
+    }
 }
 
 void C_BaseMomZoneTrigger::DrawSideFacesModelAsOverlay(const Color faceColor)
