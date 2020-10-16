@@ -30,7 +30,7 @@ static void ShowMenu(const char *filename, void (*ClosFunc)())
     }
 }
 
-CON_COMMAND(showRuler, "Opens the ruler tool.\n")
+CON_COMMAND(mom_ruler_show, "Opens the ruler tool menu.\n")
 {
     ShowMenu("rulermenu", OnRulerMenuClose);
 }
