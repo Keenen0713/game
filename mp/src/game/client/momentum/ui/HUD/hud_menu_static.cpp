@@ -103,7 +103,8 @@ void CHudMenuStatic::SelectMenuItemFromFile(int menu_item)
 
     if (menu_item == 0) // close button
     {
-        CloseFunc();
+        if (CloseFunc)
+            CloseFunc();
         return;
     }
 
