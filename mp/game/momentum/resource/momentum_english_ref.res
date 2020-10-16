@@ -227,6 +227,17 @@
         "MOM_MapSelector_InfoDialog_CreationDate" "Date Created:"
         "MOM_MapSelector_InfoDialog_ReleaseDate" "Date Released:"
 
+        // Map Commands Menu
+        "MOM_Menu_MapCommands_Toggle_Wireframes"  "Toggle Wireframes"
+        "MOM_Menu_MapCommands_Toggle_Triggers"    "Toggle showing triggers"
+        "MOM_Menu_MapCommands_Toggle_Fullbright"  "Toggle fullbright"
+        "MOM_Menu_MapCommands_Toggle_Clipbrushes" "Toggle clip brushes"
+        "MOM_Menu_MapCommands_Toggle_Water"       "Toggle water"
+        "MOM_Menu_MapCommands_Toggle_Show_Sounds" "Toggle showing current sounds"
+        "MOM_Menu_MapCommands_Toggle_Entities"    "Toggle drawing entities"
+        "MOM_Menu_MapCommands_Reload_Materials"   "Reload all materials"
+        "MOM_Menu_MapCommands_Toggle_Cheats"      "Toggle cheats"
+
         // Misc
         "MOM_BuildVersion" "Build Version"
         "MOM_GT" ">"

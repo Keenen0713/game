@@ -40,3 +40,12 @@ CON_COMMAND(mom_saveloc_show, "Opens the saved locations menu.\n")
     ShowMenu("savelocmenu", OnSavelocMenuClose);
 }
 
+CON_COMMAND(mom_mapcmds_menu_show, "Opens the map commands menu.\n")
+{
+    ShowMenu("mapcmdsmenu", nullptr);
+}
+
+CON_COMMAND(mom_custom_menu_show, "Opens the user-customized commands menu. See cfg/custommenu for configuration!\n")
+{
+    ShowMenu("custommenu", nullptr);
+}

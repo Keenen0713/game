@@ -1,0 +1,9 @@
+"Custom Menu"
+{
+    // Add up to 9 custom commands/cvars
+    // See other menus for an example
+    "menu_name" "Custom Menu"
+    "1"
+    {
+    }
+}
